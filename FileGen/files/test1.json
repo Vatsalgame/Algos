@@ -1,0 +1,6 @@
+{
+	"Headers": ["ColA", "ColB", "ColC", "ColD"],
+	"NumHeaders": 2,
+	"Data" : [["Red", "Carpet", 10, "Hello"],
+			  ["Blue", "Shoes", 20, "World"]]
+}
