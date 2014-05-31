@@ -47,9 +47,36 @@ public class FileGen {
 
     }
 
-    void createCombinations(List<Integer> indexArray, int comboSize) {
+    List<List<Integer>> createCombinations(List<Integer> indexArray, int comboSize) {
+        List<List<Integer>> combinations = null;
         for(int i = 0; i < indexArray.size(); i++) {
+            List<Integer> comboList = new ArrayList<Integer>();
+            if (comboSize <= indexArray.size() - i)
+                comboList = createComboHelper(indexArray.get(i), indexArray.subList(i+1, indexArray.size()), comboSize - 1);
+            if (comboList.size() == comboSize)
+                combinations.add(comboList);
+        }
 
+        return combinations;
+    }
+
+    List<Integer> createComboHelper(int num, List<Integer> indexArray, int comboSize) {
+        if (comboSize > 0) {
+            List<Integer> comboList = new ArrayList<Integer>();
+            comboList.add(num);
+            for(int i = 0; i < indexArray.size(); i++) {
+                comboList.add(indexArray.get(i));
+                if(comboSize <= indexArray.size() - i){
+                    // Could be useful
+                    // http://stackoverflow.com/questions/1670862/obtaining-a-powerset-of-a-set-in-java
+                }
+            }
+
+
+            return null;
+        }
+        else{
+            return null;
         }
     }
 
