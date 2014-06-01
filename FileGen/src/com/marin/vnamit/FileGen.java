@@ -48,48 +48,89 @@ public class FileGen {
     }
 
     List<List<Integer>> createCombinations(List<Integer> indexArray, int comboSize) {
-        List<List<Integer>> combinations = null;
-        for(int i = 0; i < indexArray.size(); i++) {
-            List<Integer> comboList = new ArrayList<Integer>();
-            if (comboSize <= indexArray.size() - i)
-                comboList = createComboHelper(indexArray.get(i), indexArray.subList(i+1, indexArray.size()), comboSize - 1);
-            if (comboList.size() == comboSize)
+        List<List<Integer>> combinations = new ArrayList<List<Integer>>();
+
+        if (comboSize == 1) {
+            for (int i = 0; i < indexArray.size(); i++) {
+                List<Integer> comboList = new ArrayList<Integer>();
+                comboList.add(indexArray.get(i));
                 combinations.add(comboList);
+            }
+        }
+
+        else {
+            for(int i = 0; i < indexArray.size(); i++) {
+                List<List<Integer>> comboList;
+                if (indexArray.size() - i >= comboSize) {
+                    comboList = createComboHelper(indexArray.get(i), indexArray.subList(i+1, indexArray.size()), comboSize - 1);
+                    for (int j = 0; j < comboList.size(); j++) {
+                        combinations.add(comboList.get(j));
+                    }
+                }
+            }
         }
 
         return combinations;
     }
 
-    List<Integer> createComboHelper(int num, List<Integer> indexArray, int comboSize) {
-        if (comboSize > 0) {
-            List<Integer> comboList = new ArrayList<Integer>();
-            comboList.add(num);
-            for(int i = 0; i < indexArray.size(); i++) {
+    List<List<Integer>> createComboHelper(int head, List<Integer> indexArray, int comboSize) {
+        if (comboSize == 1) {
+            List<List<Integer>> combos = new ArrayList<List<Integer>>();
+            for (int i = 0; i < indexArray.size(); i++) {
+                List<Integer> comboList = new ArrayList<Integer>();
+                comboList.add(head);
                 comboList.add(indexArray.get(i));
-                if(comboSize <= indexArray.size() - i){
-                    // Could be useful
-                    // http://stackoverflow.com/questions/1670862/obtaining-a-powerset-of-a-set-in-java
+                combos.add(comboList);
+            }
+            return combos;
+        }
+        else {
+            List<List<Integer>> combos = new ArrayList<List<Integer>>();
+            for (int i = 0; i < indexArray.size(); i++) {
+                List<List<Integer>> tempCombos;
+                if(indexArray.size() - i >= comboSize) {
+                    tempCombos = createComboHelper(indexArray.get(i), indexArray.subList(i+1, indexArray.size()), comboSize - 1);
+                    for (int j = 0; j < tempCombos.size(); j++) {
+                        List<Integer> combo = tempCombos.get(j);
+                        combo.add(0, head);
+                        combos.add(combo);
+                    }
                 }
             }
-
-
-            return null;
-        }
-        else{
-            return null;
+            return combos;
         }
     }
 
     public static void main(String[] args) {
-        String JSONFile = "files/test1.json";
-
+//        String JSONFile = "files/test1.json";
+//
         FileGen fg = new FileGen();
-        try {
-            fg.readJSON(JSONFile);
-        } catch (FileNotFoundException e) {
-            System.out.println("File Not Found!");
-        }
+//        try {
+//            fg.readJSON(JSONFile);
+//        } catch (FileNotFoundException e) {
+//            System.out.println("File Not Found!");
+//        }
+//
+//        System.out.println("Done.");
 
-        System.out.println("Done.");
+        // Testing createComboHelper
+//        int head = 1, comboSize = 2;
+//        List<Integer> indexArray = new ArrayList<Integer>();
+//        indexArray.add(2);
+//        indexArray.add(3);
+//        indexArray.add(4);
+
+//        fg.createComboHelper(head, indexArray, comboSize); // WORKS!!!
+
+        // Testing createCombinations
+        int comboSize = 2;
+        List<Integer> indexArray = new ArrayList<Integer>();
+        indexArray.add(1);
+        indexArray.add(2);
+        indexArray.add(3);
+        indexArray.add(4);
+
+        fg.createCombinations(indexArray, comboSize); // WORKS TOO!!! Tested with 2 & 3
+
     }
 }
