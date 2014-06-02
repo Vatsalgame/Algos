@@ -35,19 +35,70 @@ public class FileGen {
         Object [] tempHeaders = (Object []) map.get("Headers");
         String [] headers = Arrays.copyOf(tempHeaders, tempHeaders.length, String[].class);
 
-        Object [] data = (Object []) map.get("Data");
+        Object [] tempData = (Object []) map.get("Data");
+        List<List<String>> data = new ArrayList<List<String>>();
+
+        for(int i = 0; i < tempData.length; i++) {
+            Object [] tempRow = (Object []) tempData[i];
+            List<String> row = new ArrayList<String>();
+            for(int j = 0; j < tempRow.length; j++) {
+                try {
+                    row.add((String)tempRow[j]);
+                }
+                catch (ClassCastException cce) {
+                    Long num = (Long)tempRow[j];
+                    row.add(num.toString());
+                }
+            }
+            data.add(row);
+        }
+
+//        String [][] data = Arrays.copyOf(tempData, tempData.length, String[][].class);
+//        for (int i = 0; i < data.length; i++) {
+//            data[i] = Arrays.copyOf(tempData[i], tempData[i].length, )
+//        }
 
         long numHeaders = (Long)map.get("NumHeaders");
 
-        int [] headerIndices = new int[headers.length];
-        for (int i = 0; i < headers.length; i++) {
-            headerIndices[i] = i;
+        List<Integer> indexArray = new ArrayList<Integer>();
+        for(int i = 0; i <  headers.length; i++) {
+            indexArray.add(i);
         }
 
+        List<List<Integer>> indexCombinations = createCombinations(indexArray, numHeaders);
+
+        List<List<List<String>>> fileCombinations = new ArrayList<List<List<String>>>();
+
+        List<List<String>> fileData;
+        List<String> rowData;
+        List<Integer> indices;
+
+        // pull out into a function of its own
+
+        for(int i = 0; i < indexCombinations.size(); i++) {
+            fileData = new ArrayList<List<String>>();
+            rowData = new ArrayList<String>();
+            indices = indexCombinations.get(i);
+            // creating headers
+            for(int j = 0; j < indices.size(); j++) {
+                rowData.add(headers[indices.get(j)]);
+            }
+            // adding headers
+            fileData.add(rowData);
+            // actual data
+            for (int k = 0; k < data.size(); k++) {
+                rowData = new ArrayList<String>();
+                for (int l = 0; l < indices.size(); l++) {
+                    rowData.add(data.get(k).get(indices.get(l)));
+                }
+                fileData.add(rowData);
+            }
+            fileCombinations.add(fileData);
+        }
 
     }
 
-    List<List<Integer>> createCombinations(List<Integer> indexArray, int comboSize) {
+    List<List<Integer>> createCombinations(List<Integer> indexArray, long comboSize) {
         List<List<Integer>> combinations = new ArrayList<List<Integer>>();
 
         if (comboSize == 1) {
@@ -73,7 +124,7 @@ public class FileGen {
         return combinations;
     }
 
-    List<List<Integer>> createComboHelper(int head, List<Integer> indexArray, int comboSize) {
+    List<List<Integer>> createComboHelper(int head, List<Integer> indexArray, long comboSize) {
         if (comboSize == 1) {
             List<List<Integer>> combos = new ArrayList<List<Integer>>();
             for (int i = 0; i < indexArray.size(); i++) {
@@ -102,16 +153,16 @@ public class FileGen {
     }
 
     public static void main(String[] args) {
-//        String JSONFile = "files/test1.json";
+        String JSONFile = "files/test1.json";
 //
         FileGen fg = new FileGen();
-//        try {
-//            fg.readJSON(JSONFile);
-//        } catch (FileNotFoundException e) {
-//            System.out.println("File Not Found!");
-//        }
-//
-//        System.out.println("Done.");
+        try {
+            fg.readJSON(JSONFile);
+        } catch (FileNotFoundException e) {
+            System.out.println("File Not Found!");
+        }
+
+        System.out.println("Done.");
 
         // Testing createComboHelper
 //        int head = 1, comboSize = 2;
@@ -123,14 +174,14 @@ public class FileGen {
 //        fg.createComboHelper(head, indexArray, comboSize); // WORKS!!!
 
         // Testing createCombinations
-        int comboSize = 2;
-        List<Integer> indexArray = new ArrayList<Integer>();
-        indexArray.add(1);
-        indexArray.add(2);
-        indexArray.add(3);
-        indexArray.add(4);
-
-        fg.createCombinations(indexArray, comboSize); // WORKS TOO!!! Tested with 2 & 3
+//        int comboSize = 2;
+//        List<Integer> indexArray = new ArrayList<Integer>();
+//        indexArray.add(1);
+//        indexArray.add(2);
+//        indexArray.add(3);
+//        indexArray.add(4);
+//
+//        List<List<Integer>> combos = fg.createCombinations(indexArray, comboSize); // WORKS TOO!!! Tested with 2 & 3
 
     }
 }
